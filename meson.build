@@ -1,7 +1,7 @@
 project(
-  'xfce4-sample-plugin',
+  'xfce4-hiddenapps-plugin',
   'c',
-  version: '0.0.4-dev',
+  version: '0.0.1',
   license: 'GPL-2.0-or-later',
   meson_version: '>= 0.54.0',
   default_options: [
@@ -16,8 +16,8 @@ pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 copyright_year = '2025'
 
 cc = meson.get_compiler('c')
-pkgconfig = import('pkgconfig')
-gnome = import('gnome')
+#pkgconfig = import('pkgconfig')
+#gnome = import('gnome')
 i18n = import('i18n')
 
 dependency_versions = {
@@ -130,6 +130,6 @@ xfce_revision_h = vcs_tag(
   replace_string: '@REVISION@',
 )
 
-subdir('icons')
-subdir('panel-plugin')
+#subdir('icons')
+subdir('src')
 subdir('po')

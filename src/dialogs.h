@@ -1,6 +1,6 @@
 /*  $Id$
  *
- *  Copyright (C) 2012 John Doo <john@foo.org>
+ *  Copyright (C) 2025 Leonardo <noreply@leoflo.me>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,17 +17,25 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __SAMPLE_DIALOGS_H__
-#define __SAMPLE_DIALOGS_H__
+#ifndef __DIALOGS_H__
+#define __DIALOGS_H__
+
+#include "plugin.h"
+
+#ifdef HAVE_XFCE_REVISION_H
+#include "xfce-revision.h"
+#else
+#define VERSION_FULL "0.0.1"
+#endif
+
+#define PLUGIN_WEBSITE "https://leoflo.me"
+
+#include <libxfce4ui/libxfce4ui.h>
 
 G_BEGIN_DECLS
 
-void
-sample_configure    (XfcePanelPlugin *plugin,
-                     SamplePlugin    *sample);
-
-void
-sample_about        (XfcePanelPlugin *plugin);
+void dialog_configure (XfcePanelPlugin* plugin, Plugin* sample);
+void dialog_about (XfcePanelPlugin* plugin);
 
 G_END_DECLS
 

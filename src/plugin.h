@@ -1,6 +1,6 @@
 /*  $Id$
  *
- *  Copyright (C) 2012 John Doo <john@foo.org>
+ *  Copyright (C) 2025 Leonardo <noreply@leoflo.me>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,35 +17,33 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __SAMPLE_H__
-#define __SAMPLE_H__
+#ifndef __PLUGIN_H__
+#define __PLUGIN_H__
+
+#include <string.h>
+#include <gtk/gtk.h>
+#include <libxfce4util/libxfce4util.h>
+#include <libxfce4panel/libxfce4panel.h>
+
+#define DEFAULT_MAX_COLUMNS 5
 
 G_BEGIN_DECLS
 
-/* plugin structure */
-typedef struct
-{
-    XfcePanelPlugin *plugin;
+typedef struct {
+  XfcePanelPlugin *plugin;
 
-    /* panel widgets */
-    GtkWidget       *ebox;
-    GtkWidget       *hvbox;
-    GtkWidget       *label;
+  /* panel widgets */
+  GtkWidget* ebox;
+  GtkWidget* hvbox;
+  GtkWidget* label;
 
-    /* sample settings */
-    GtkWidget       *settings_dialog;
-    gchar           *setting1;
-    gint             setting2;
-    gboolean         setting3;
-}
-SamplePlugin;
+  /* sample settings */
+  GtkWidget* settings_dialog;
+  gint max_columns;
+} Plugin;
 
-
-
-void
-sample_save (XfcePanelPlugin *plugin,
-             SamplePlugin    *sample);
+void settings_save(XfcePanelPlugin* plugin, Plugin* instance);
 
 G_END_DECLS
 
-#endif /* !__SAMPLE_H__ */
+#endif
