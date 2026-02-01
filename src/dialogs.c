@@ -74,7 +74,7 @@ void dialog_about (XfcePanelPlugin *plugin) {
     "license", xfce_get_license_text (XFCE_LICENSE_TEXT_GPL),
     "version", VERSION_FULL,
     "program-name", PACKAGE_NAME,
-    "comments", _("This is a sample plugin"),
+    "comments", _("Windows like system tray plugin"),
     "website", PLUGIN_WEBSITE,
     "copyright", "Copyright \xc2\xa9 2006-" COPYRIGHT_YEAR " Leonardo",
     "authors", auth,
