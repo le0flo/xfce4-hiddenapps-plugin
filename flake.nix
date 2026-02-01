@@ -19,6 +19,27 @@
         xfce4-panel
         libxfce4ui libxfce4util
       ];
+
+      shellHook = ''
+        cat > .clangd <<EOF
+        CompileFlags:
+          CompilationDatabase: build/
+        EOF
+        mkdir -p .zed
+        cat > .zed/settings.json <<EOF
+        {
+          "lsp": {
+            "clangd": {
+              "binary": {
+                "arguments": [
+                  "--query-driver=${pkgs.gcc}/bin/gcc"
+                ]
+              }
+            }
+          }
+        }
+        EOF
+      '';
     };
 
     packages.${system}.default = pkgs.stdenv.mkDerivation {

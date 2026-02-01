@@ -1,7 +1,11 @@
 # Project
 build/
 result
+
+# Editor
+.clangd
 .cache/
+.zed
 
 # Prerequisites
 *.d
