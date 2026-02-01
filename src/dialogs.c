@@ -42,7 +42,7 @@ void dialog_configure (XfcePanelPlugin *plugin, Plugin *instance) {
   GtkWidget *dialog;
 
   if (instance->settings_dialog != NULL) {
-    gtk_window_present(GTK_WINDOW(instance->settings_dialog));
+    gtk_window_present (GTK_WINDOW (instance->settings_dialog));
     return;
   }
 
