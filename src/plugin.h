@@ -34,7 +34,7 @@ typedef struct {
   /* panel widgets */
   GtkWidget* ebox;
   GtkWidget* hvbox;
-  GtkWidget* label;
+  GtkWidget* icon;
 
   /* sample settings */
   GtkWidget* settings_dialog;

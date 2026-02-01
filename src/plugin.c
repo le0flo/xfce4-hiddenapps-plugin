@@ -19,6 +19,7 @@
 
 #include "plugin.h"
 #include "dialogs.h"
+#include "gtk/gtk.h"
 
 void settings_save (XfcePanelPlugin* plugin, Plugin* instance) {
   XfceRc* rc;
@@ -65,7 +66,7 @@ static void settings_read (Plugin* instance) {
 static Plugin* plugin_new (XfcePanelPlugin* plugin) {
   Plugin* instance;
   GtkOrientation orientation;
-  GtkWidget* label;
+  GtkWidget* icon;
 
   instance = g_slice_new0 (Plugin);
   instance->plugin = plugin;
@@ -80,9 +81,9 @@ static Plugin* plugin_new (XfcePanelPlugin* plugin) {
   gtk_widget_show (instance->hvbox);
   gtk_container_add (GTK_CONTAINER (instance->ebox), instance->hvbox);
 
-  label = gtk_label_new (_ ("^"));
-  gtk_widget_show (label);
-  gtk_box_pack_start (GTK_BOX (instance->hvbox), label, FALSE, FALSE, 0);
+  icon = gtk_image_new_from_icon_name ("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON);
+  gtk_widget_show (icon);
+  gtk_box_pack_start (GTK_BOX (instance->hvbox), icon, FALSE, FALSE, 0);
 
   return instance;
 }
