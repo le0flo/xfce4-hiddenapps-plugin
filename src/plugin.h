@@ -25,6 +25,7 @@
 #include <libxfce4panel/libxfce4panel.h>
 
 #include "config.h"
+#include "gio/gio.h"
 
 G_BEGIN_DECLS
 
@@ -37,6 +38,7 @@ typedef struct {
   GtkWidget* item_button;
 
   GtkWidget* menu;
+  GDBusProxy* watcher;
 
   GtkWidget* settings_dialog;
 } HiddenApps;

@@ -24,12 +24,7 @@
 
 #include "plugin.h"
 
-#ifdef HAVE_XFCE_REVISION_H
-#include "xfce-revision.h"
-#else
 #define VERSION_FULL "0.0.1"
-#endif
-
 #define PLUGIN_WEBSITE "https://leoflo.me"
 
 G_BEGIN_DECLS
