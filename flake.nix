@@ -24,7 +24,7 @@
     packages.${system}.default = pkgs.stdenv.mkDerivation {
       pname = "xfce4-hiddenapps-plugin";
       version = "0.0.1";
-      src = ./.;
+      src = pkgs.lib.cleanSource ./.;
 
       nativeBuildInputs = with pkgs; [
         gettext pkg-config
