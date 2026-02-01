@@ -42,72 +42,73 @@
       '';
     };
 
-    packages.${system}.default = pkgs.stdenv.mkDerivation {
-      pname = "xfce4-hiddenapps-plugin";
-      version = "0.0.1";
+    packages.${system} = {
+      default = pkgs.stdenv.mkDerivation {
+        pname = "xfce4-hiddenapps-plugin";
+        version = "0.0.1";
 
-      src = fetchGit {
-        url = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
-        ref = "master";
-        rev = "3d9ab5cce8a4de08f86a4df415f796cfa57f827e";
+        src = fetchGit {
+          url = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
+          ref = "master";
+          rev = "3d9ab5cce8a4de08f86a4df415f796cfa57f827e";
+        };
+
+        nativeBuildInputs = with pkgs; [
+          gettext pkg-config
+          ninja meson
+        ];
+
+        buildInputs = with pkgs; [
+          glib gtk3
+          xfce4-panel
+          libxfce4ui libxfce4util
+        ];
+
+        installPhase = ''
+          mkdir -p $out/{lib,share}/xfce4/panel/plugins
+
+          cp src/libhiddenapps.so $out/lib/xfce4/panel/plugins
+          cp src/hiddenapps.desktop $out/share/xfce4/panel/plugins
+        '';
+
+        meta = {
+          description = "Windows like system tray plugin";
+          homepage = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
+          license = pkgs.lib.licenses.gpl2Plus;
+          platforms = pkgs.lib.platforms.linux;
+        };
       };
 
-      nativeBuildInputs = with pkgs; [
-        gettext pkg-config
-        ninja meson
-      ];
+      dev = pkgs.stdenv.mkDerivation {
+        pname = "xfce4-hiddenapps-plugin";
+        version = "0.0.1";
+        src = pkgs.lib.cleanSource ./.;
 
-      buildInputs = with pkgs; [
-        glib gtk3
-        xfce4-panel
-        libxfce4ui libxfce4util
-      ];
+        nativeBuildInputs = with pkgs; [
+          gettext pkg-config
+          ninja meson
+        ];
 
-      installPhase = ''
-        mkdir -p $out/{lib,share}/xfce4/panel/plugins
+        buildInputs = with pkgs; [
+          glib gtk3
+          xfce4-panel
+          libxfce4ui libxfce4util
+        ];
 
-        cp src/libhiddenapps.so $out/lib/xfce4/panel/plugins
-        cp src/hiddenapps.desktop $out/share/xfce4/panel/plugins
-      '';
+        installPhase = ''
+          mkdir -p $out/{lib,share}/xfce4/panel/plugins
 
-      meta = {
-        description = "Windows like system tray plugin";
-        homepage = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
-        license = pkgs.lib.licenses.gpl2Plus;
-        platforms = pkgs.lib.platforms.linux;
+          cp src/libhiddenapps.so $out/lib/xfce4/panel/plugins
+          cp src/hiddenapps.desktop $out/share/xfce4/panel/plugins
+        '';
+
+        meta = {
+          description = "Windows like system tray plugin";
+          homepage = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
+          license = pkgs.lib.licenses.gpl2Plus;
+          platforms = pkgs.lib.platforms.linux;
+        };
       };
     };
-
-    /*
-    packages.${system}.dev = pkgs.stdenv.mkDerivation {
-      pname = "xfce4-hiddenapps-plugin";
-      version = "0.0.1";
-      src = pkgs.lib.cleanSource ./.;
-
-      nativeBuildInputs = with pkgs; [
-        gettext pkg-config
-        ninja meson
-      ];
-
-      buildInputs = with pkgs; [
-        glib gtk3
-        xfce4-panel
-        libxfce4ui libxfce4util
-      ];
-
-      installPhase = ''
-        mkdir -p $out/{lib,share}/xfce4/panel/plugins
-
-        cp src/libhiddenapps.so $out/lib/xfce4/panel/plugins
-        cp src/hiddenapps.desktop $out/share/xfce4/panel/plugins
-      '';
-
-      meta = {
-        description = "Windows like system tray plugin";
-        homepage = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
-        license = pkgs.lib.licenses.gpl2Plus;
-        platforms = pkgs.lib.platforms.linux;
-      };
-    };*/
   };
 }
