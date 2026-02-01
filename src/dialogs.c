@@ -19,7 +19,7 @@
 
 #include "dialogs.h"
 
-static void configure_response (GtkWidget* dialog, gint response, Plugin* instance) {
+static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance) {
   gboolean result;
 
   if (response == GTK_RESPONSE_HELP) {
@@ -32,13 +32,13 @@ static void configure_response (GtkWidget* dialog, gint response, Plugin* instan
   else {
     g_object_set_data (G_OBJECT (instance->plugin), "dialog", NULL);
 
-    settings_save (instance->plugin, instance);
+    settings_save (instance->plugin, instance->config);
 
     gtk_widget_destroy (dialog);
   }
 }
 
-void dialog_configure (XfcePanelPlugin *plugin, Plugin *instance) {
+void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
   GtkWidget *dialog;
 
   if (instance->settings_dialog != NULL) {
