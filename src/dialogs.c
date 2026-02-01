@@ -19,6 +19,10 @@
 
 #include "dialogs.h"
 
+#ifdef HAVE_XFCE_REVISION_H
+#include "xfce-revision.h"
+#endif
+
 static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance) {
   gboolean result;
 

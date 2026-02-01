@@ -5,6 +5,8 @@ plugin_sources = [
   'plugin.h',
   'dialogs.c',
   'dialogs.h',
+  'statusnotifier.c',
+  'statusnotifier.h',
   'menu.c',
   'menu.h',
   xfce_revision_h,
