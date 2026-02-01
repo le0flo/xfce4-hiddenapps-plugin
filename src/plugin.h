@@ -20,7 +20,6 @@
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
 
-#include <string.h>
 #include <gtk/gtk.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/libxfce4panel.h>

@@ -124,7 +124,7 @@ add_project_arguments(extra_cflags, language: 'c')
 
 xfce_revision_h = vcs_tag(
   command: ['git', 'rev-parse', '--short', 'HEAD'],
-  fallback: 'UNKNOWN',
+  fallback: 'dev',
   input: 'xfce-revision.h.in',
   output: 'xfce-revision.h',
   replace_string: '@REVISION@',
