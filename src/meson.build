@@ -1,8 +1,12 @@
 plugin_sources = [
-  'dialogs.c',
-  'dialogs.h',
+  'config.c',
+  'config.h',
   'plugin.c',
   'plugin.h',
+  'dialogs.c',
+  'dialogs.h',
+  'menu.c',
+  'menu.h',
   xfce_revision_h,
 ]
 

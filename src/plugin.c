@@ -18,92 +18,58 @@
  */
 
 #include "plugin.h"
+#include "menu.h"
 #include "dialogs.h"
-#include "gtk/gtk.h"
 
-void settings_save (XfcePanelPlugin* plugin, Plugin* instance) {
-  XfceRc* rc;
-  gchar* file;
-
-  file = xfce_panel_plugin_save_location (plugin, TRUE);
-
-  if (G_UNLIKELY (file == NULL)) {
-    DBG ("Failed to open config file");
-    return;
-  }
-
-  rc = xfce_rc_simple_open (file, FALSE);
-  g_free (file);
-
-  if (G_LIKELY (rc != NULL)) {
-    xfce_rc_write_int_entry (rc, "max_columns", instance->max_columns);
-    xfce_rc_close (rc);
-  }
-}
-
-static void settings_read (Plugin* instance) {
-  XfceRc* rc;
-  gchar* file;
-
-  file = xfce_panel_plugin_save_location (instance->plugin, TRUE);
-
-  if (G_LIKELY (file != NULL)) {
-    rc = xfce_rc_simple_open (file, TRUE);
-    g_free (file);
-
-    if (G_LIKELY (rc != NULL)) {
-      instance->max_columns = xfce_rc_read_int_entry (rc, "max_columns", DEFAULT_MAX_COLUMNS);
-      xfce_rc_close (rc);
-
-      return;
-    }
-  }
-
-  DBG ("Applying default settings");
-  instance->max_columns = DEFAULT_MAX_COLUMNS;
-}
-
-static Plugin* plugin_new (XfcePanelPlugin* plugin) {
-  Plugin* instance;
+static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
+  HiddenApps* instance;
+  Config* config;
   GtkOrientation orientation;
-  GtkWidget* icon;
 
-  instance = g_slice_new0 (Plugin);
+  instance = g_slice_new0 (HiddenApps);
   instance->plugin = plugin;
+  config = g_slice_new0(Config);
+  instance->config = config;
 
-  settings_read (instance);
+  settings_read (plugin, config);
+
   orientation = xfce_panel_plugin_get_orientation (plugin);
 
-  instance->ebox = gtk_event_box_new ();
-  gtk_widget_show (instance->ebox);
+  instance->item_ebox = gtk_event_box_new ();
+  gtk_widget_show (instance->item_ebox);
 
-  instance->hvbox = gtk_box_new (orientation, 2);
-  gtk_widget_show (instance->hvbox);
-  gtk_container_add (GTK_CONTAINER (instance->ebox), instance->hvbox);
+  instance->item_hvbox = gtk_box_new (orientation, 2);
+  gtk_widget_show (instance->item_hvbox);
+  gtk_container_add (GTK_CONTAINER (instance->item_ebox), instance->item_hvbox);
 
-  icon = gtk_image_new_from_icon_name ("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON);
-  gtk_widget_show (icon);
-  gtk_box_pack_start (GTK_BOX (instance->hvbox), icon, FALSE, FALSE, 0);
+  instance->item_button = gtk_button_new_from_icon_name("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON);
+  gtk_widget_show (instance->item_button);
+  gtk_box_pack_start (GTK_BOX (instance->item_hvbox), instance->item_button, FALSE, FALSE, 0);
+
+  menu_build (plugin, instance);
+
+  g_signal_connect (instance->item_button, "button-press-event", G_CALLBACK (menu_show), instance->menu);
 
   return instance;
 }
 
-static void plugin_free (XfcePanelPlugin* plugin, Plugin* instance) {
+static void hiddenapps_free (XfcePanelPlugin* plugin, HiddenApps* instance) {
   GtkWidget* dialog;
 
   dialog = g_object_get_data (G_OBJECT (plugin), "dialog");
   if (G_UNLIKELY (dialog != NULL)) gtk_widget_destroy (dialog);
 
-  gtk_widget_destroy (instance->hvbox);
+  gtk_widget_destroy (instance->item_button);
+  gtk_widget_destroy (instance->item_hvbox);
 
-  g_slice_free (Plugin, instance);
+  g_slice_free (HiddenApps, instance);
 }
 
-static void plugin_orientation_changed (XfcePanelPlugin* plugin, GtkOrientation orientation, Plugin* instance) {
-  gtk_orientable_set_orientation (GTK_ORIENTABLE (instance->hvbox), orientation);
+static void hiddenapps_orientation_changed (XfcePanelPlugin* plugin, GtkOrientation orientation, HiddenApps* instance) {
+  gtk_orientable_set_orientation (GTK_ORIENTABLE (instance->item_hvbox), orientation);
 }
 
-static gboolean plugin_size_changed (XfcePanelPlugin* plugin, gint size, Plugin* instance) {
+static gboolean hiddenapps_size_changed (XfcePanelPlugin* plugin, gint size, HiddenApps* instance) {
   GtkOrientation orientation;
 
   orientation = xfce_panel_plugin_get_orientation (plugin);
@@ -118,34 +84,26 @@ static gboolean plugin_size_changed (XfcePanelPlugin* plugin, gint size, Plugin*
   return TRUE;
 }
 
-static void plugin_construct (XfcePanelPlugin *plugin) {
-  Plugin* instance;
+static void hiddenapps_construct (XfcePanelPlugin *plugin) {
+  HiddenApps* instance;
 
-  /* setup transation domain */
   xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
-  /* create the plugin */
-  instance = plugin_new (plugin);
+  instance = hiddenapps_new (plugin);
 
-  /* add the ebox to the panel */
-  gtk_container_add (GTK_CONTAINER (plugin), instance->ebox);
+  gtk_container_add (GTK_CONTAINER (plugin), instance->item_ebox);
+  xfce_panel_plugin_add_action_widget (plugin, instance->item_ebox);
 
-  /* show the panel's right-click menu on this ebox */
-  xfce_panel_plugin_add_action_widget (plugin, instance->ebox);
-
-  /* connect plugin signals */
-  g_signal_connect (G_OBJECT (plugin), "free-data", G_CALLBACK (plugin_free), instance);
+  g_signal_connect (G_OBJECT (plugin), "free-data", G_CALLBACK (hiddenapps_free), instance);
   g_signal_connect (G_OBJECT (plugin), "save", G_CALLBACK (settings_save), instance);
-  g_signal_connect (G_OBJECT (plugin), "orientation-changed", G_CALLBACK (plugin_orientation_changed), instance);
-  g_signal_connect (G_OBJECT (plugin), "size-changed", G_CALLBACK (plugin_size_changed), instance);
+  g_signal_connect (G_OBJECT (plugin), "orientation-changed", G_CALLBACK (hiddenapps_orientation_changed), instance);
+  g_signal_connect (G_OBJECT (plugin), "size-changed", G_CALLBACK (hiddenapps_size_changed), instance);
 
-  /* show the configure menu item and connect signal */
   xfce_panel_plugin_menu_show_configure (plugin);
   g_signal_connect (G_OBJECT (plugin), "configure-plugin", G_CALLBACK (dialog_configure), instance);
 
-  /* show the about menu item and connect signal */
   xfce_panel_plugin_menu_show_about (plugin);
   g_signal_connect (G_OBJECT (plugin), "about", G_CALLBACK (dialog_about), NULL);
 }
 
-XFCE_PANEL_PLUGIN_REGISTER (plugin_construct);
+XFCE_PANEL_PLUGIN_REGISTER (hiddenapps_construct);

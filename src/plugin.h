@@ -24,24 +24,22 @@
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/libxfce4panel.h>
 
-#define DEFAULT_MAX_COLUMNS 5
+#include "config.h"
 
 G_BEGIN_DECLS
 
 typedef struct {
-  XfcePanelPlugin *plugin;
+  XfcePanelPlugin* plugin;
+  Config* config;
 
-  /* panel widgets */
-  GtkWidget* ebox;
-  GtkWidget* hvbox;
-  GtkWidget* icon;
+  GtkWidget* item_ebox;
+  GtkWidget* item_hvbox;
+  GtkWidget* item_button;
 
-  /* sample settings */
+  GtkWidget* menu;
+
   GtkWidget* settings_dialog;
-  gint max_columns;
-} Plugin;
-
-void settings_save(XfcePanelPlugin* plugin, Plugin* instance);
+} HiddenApps;
 
 G_END_DECLS
 
