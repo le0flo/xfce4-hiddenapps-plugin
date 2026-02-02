@@ -1,23 +1,27 @@
 #include "menu.h"
-#include "gtk/gtk.h"
+
 #include "statusnotifier.h"
+#include "watcher.h"
 
 void menu_refresh (HiddenApps* instance) {
-  GList *children, *iter;
-
   if (instance->sn_items != NULL) {
     g_list_free_full (instance->sn_items, sn_item_free);
   }
+
   instance->sn_items = watcher_sn_items (instance->watcher);
 
-  children = gtk_container_get_children (GTK_CONTAINER (instance->menu));
+  GList* iter = NULL;
+  GList* children = gtk_container_get_children (GTK_CONTAINER (instance->menu));
+
   for (iter = children; iter != NULL; iter = iter->next) {
     gtk_widget_destroy (GTK_WIDGET (iter->data));
   }
+
   g_list_free (children);
 
-  if (instance->sn_items == NULL)
+  if (instance->sn_items == NULL) {
     return;
+  }
 
   for (GList *l = instance->sn_items; l != NULL; l = l->next) {
     SnItem *sn = (SnItem*) l->data;
@@ -25,19 +29,25 @@ void menu_refresh (HiddenApps* instance) {
     GtkWidget *image;
     if (sn->icon_pixmap != NULL) {
       GdkPixbuf *scaled = gdk_pixbuf_scale_simple (sn->icon_pixmap, 24, 24, GDK_INTERP_BILINEAR);
+
       image = gtk_image_new_from_pixbuf (scaled);
+
       g_object_unref (scaled);
-    } else {
+    }
+    else {
       image = gtk_image_new_from_icon_name (sn->icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
     }
 
     const gchar *text = NULL;
-    if (sn->tooltip_title != NULL && sn->tooltip_title[0] != '\0')
+    if (sn->tooltip_title != NULL && sn->tooltip_title[0] != '\0') {
       text = sn->tooltip_title;
-    else if (sn->title != NULL)
+    }
+    else if (sn->title != NULL) {
       text = sn->title;
-    else
+    }
+    else {
       text = "";
+    }
 
     GtkWidget *label = gtk_label_new (text);
 
@@ -74,12 +84,22 @@ gboolean menu_show(GtkWidget *widget, GdkEventButton* event, HiddenApps* instanc
 
   if (event->button == 1) {
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (instance->item_button), TRUE);
+
     g_signal_handlers_disconnect_by_func (menu, menu_deactivate, instance->item_button);
     g_signal_connect (menu, "deactivate", G_CALLBACK (menu_deactivate), instance->item_button);
+
     gtk_menu_popup_at_widget (menu, widget, GDK_GRAVITY_SOUTH, GDK_GRAVITY_NORTH, (GdkEvent*) event);
 
     return TRUE;
   }
 
   return FALSE;
+}
+
+void on_properties_changed (GDBusProxy* proxy, GVariant* changed, GStrv invalidated, HiddenApps* instance) {
+  menu_refresh (instance);
+}
+
+void on_item_registered (GDBusProxy* proxy, gchar* sender, gchar* signal, GVariant* params, HiddenApps* instance) {
+  menu_refresh (instance);
 }

@@ -1,23 +1,27 @@
 #ifndef __STATUSNOTIFIER_H__
 #define __STATUSNOTIFIER_H__
 
-#include "plugin.h"
+#include <glib.h>
+#include <gdk/gdk.h>
 
 typedef struct {
-  gchar *id;
-  gchar *title;
-  gchar *icon_name;
-  GdkPixbuf *icon_pixmap;
-  gchar *tooltip_title;
-  gchar *tooltip_description;
+  gchar* id;
+  gchar* title;
+
+  gchar* icon_name;
+  GdkPixbuf* icon_pixmap;
+
+  gchar* tooltip_title;
+  gchar* tooltip_description;
 } SnItem;
 
 void sn_item_free (gpointer data);
+void pixbuf_data_free (guchar* pixels, gpointer user_data);
 
-GDBusProxy* watcher_new (void);
-GList* watcher_sn_items (GDBusProxy* watcher);
+GVariant* sn_item_get_property (const gchar* bus_name, const gchar* obj_path, const gchar* prop_name);
 
-void on_properties_changed (GDBusProxy* proxy, GVariant* changed, GStrv invalidated, HiddenApps* instance);
-void on_item_registered (GDBusProxy* proxy, gchar* sender, gchar* signal, GVariant* params, HiddenApps* instance);
+gchar* sn_prop_parse_string (GVariant* variant);
+GdkPixbuf* sn_prop_parse_icon_pixmap (GVariant* variant);
+void sn_prop_parse_tooltip (GVariant* variant, gchar** title, gchar** description);
 
 #endif

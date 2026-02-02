@@ -1,8 +1,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#include <gtk/gtk.h>
-#include <libxfce4util/libxfce4util.h>
+#include <glib.h>
 #include <libxfce4panel/libxfce4panel.h>
 
 #define DEFAULT_CONFIG_MAX_COLUMNS 5
