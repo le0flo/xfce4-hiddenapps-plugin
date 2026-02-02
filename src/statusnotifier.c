@@ -82,7 +82,9 @@ static GdkPixbuf* sn_item_parse_icon_pixmap (GVariant *variant) {
     /* ARGB32 network byte order -> RGBA for GdkPixbuf */
     guchar *rgba = g_malloc (width * height * 4);
     for (gint i = 0; i < width * height; i++) {
-      guint32 pixel = GUINT32_FROM_BE (((guint32*) data)[i]);
+      guint32 pixel;
+      memcpy (&pixel, data + i * 4, sizeof (guint32));
+      pixel = GUINT32_FROM_BE (pixel);
       rgba[i * 4 + 0] = (pixel >> 16) & 0xFF; /* R */
       rgba[i * 4 + 1] = (pixel >>  8) & 0xFF; /* G */
       rgba[i * 4 + 2] = (pixel >>  0) & 0xFF; /* B */
