@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "statusnotifier.h"
+#include "menu.h"
 
 static gchar* sn_item_get_string_property (const gchar *bus_name, const gchar *obj_path, const gchar *prop_name) {
   GError *error;
@@ -106,9 +107,9 @@ GList* watcher_sn_items (GDBusProxy* watcher) {
 }
 
 void on_properties_changed (GDBusProxy *proxy, GVariant *changed, GStrv invalidated, HiddenApps* instance) {
-  instance->sn_items = watcher_sn_items(instance->watcher);
+  menu_refresh (instance);
 }
 
 void on_item_registered(GDBusProxy *proxy, gchar *sender, gchar *signal, GVariant *params, HiddenApps* instance) {
-  instance->sn_items = watcher_sn_items(instance->watcher);
+  menu_refresh (instance);
 }
