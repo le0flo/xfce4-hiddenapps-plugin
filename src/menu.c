@@ -21,9 +21,16 @@ void menu_refresh (HiddenApps* instance) {
 
   for (GList *l = instance->sn_items; l != NULL; l = l->next) {
     SnItem *sn = (SnItem*) l->data;
+
     GtkWidget *image = gtk_image_new_from_icon_name (sn->icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    GtkWidget *label = gtk_label_new (sn->title ? sn->title : "");
+
+    GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+    gtk_box_pack_start (GTK_BOX (box), image, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+
     GtkWidget *menu_item = gtk_menu_item_new ();
-    gtk_container_add (GTK_CONTAINER (menu_item), image);
+    gtk_container_add (GTK_CONTAINER (menu_item), box);
     gtk_widget_show_all (menu_item);
     gtk_menu_shell_append (GTK_MENU_SHELL (instance->menu), menu_item);
   }
