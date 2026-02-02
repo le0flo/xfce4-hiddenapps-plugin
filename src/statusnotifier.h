@@ -7,6 +7,9 @@ typedef struct {
   gchar *id;
   gchar *title;
   gchar *icon_name;
+  GdkPixbuf *icon_pixmap;
+  gchar *tooltip_title;
+  gchar *tooltip_description;
 } SnItem;
 
 void sn_item_free (gpointer data);
