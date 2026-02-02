@@ -8,7 +8,7 @@
 G_BEGIN_DECLS
 
 void menu_build (XfcePanelPlugin* plugin, HiddenApps* instance);
-gboolean menu_show (GtkWidget *widget, GdkEventButton* event, gpointer user_data);
+gboolean menu_show (GtkWidget *widget, GdkEventButton* event, HiddenApps* instance);
 
 G_END_DECLS
 
