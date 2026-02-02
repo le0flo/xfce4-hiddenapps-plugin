@@ -42,6 +42,10 @@ static void configure_response (GtkWidget* dialog, gint response, HiddenApps* in
   }
 }
 
+static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance) {
+  instance->config->max_columns = gtk_spin_button_get_value_as_int (spin);
+}
+
 void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
   GtkWidget *dialog;
 
@@ -63,6 +67,22 @@ void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
 
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "xfce4-settings");
+
+  GtkWidget *content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (box), 12);
+
+  GtkWidget *label = gtk_label_new (_("Max columns:"));
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+
+  GtkWidget *spin = gtk_spin_button_new_with_range (1, 20, 1);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), instance->config->max_columns);
+  g_signal_connect (spin, "value-changed", G_CALLBACK (on_max_columns_changed), instance);
+  gtk_box_pack_start (GTK_BOX (box), spin, FALSE, FALSE, 0);
+
+  gtk_box_pack_start (GTK_BOX (content), box, FALSE, FALSE, 0);
+  gtk_widget_show_all (box);
 
   g_object_set_data (G_OBJECT (plugin), "dialog", dialog);
   g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (configure_response), instance);
