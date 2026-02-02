@@ -1,17 +1,21 @@
-#include "statusnotifier.h"
 #include "menu.h"
+#include "gtk/gtk.h"
+#include "statusnotifier.h"
 
 void menu_build (XfcePanelPlugin* plugin, HiddenApps* instance) {
   instance->watcher = watcher_new ();
   instance->menu = gtk_menu_new ();
   instance->sn_items = watcher_sn_items (instance->watcher);
 
+  g_print ("sn_items count: %d\n", g_list_length (instance->sn_items));
+
   GtkWidget *grid = gtk_grid_new ();
   gint col = 0, row = 0;
 
   for (GList *l = instance->sn_items; l != NULL; l = l->next) {
     SnItem *sn = (SnItem*) l->data;
-    GtkWidget *image = gtk_image_new_from_icon_name (sn->icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    g_print ("item: id=%s title=%s icon=%s\n", sn->id, sn->title, sn->icon_name);
+    GtkWidget *image = gtk_image_new_from_icon_name (sn->icon_name, GTK_ICON_SIZE_BUTTON);
     gtk_grid_attach (GTK_GRID (grid), image, col, row, 1, 1);
 
     col++;
