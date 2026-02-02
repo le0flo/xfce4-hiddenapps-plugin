@@ -4,6 +4,29 @@
 void menu_build (XfcePanelPlugin* plugin, HiddenApps* instance) {
   instance->watcher = watcher_new ();
   instance->menu = gtk_menu_new ();
+  instance->sn_items = watcher_sn_items (instance->watcher);
+
+  GtkWidget *grid = gtk_grid_new ();
+  gint col = 0, row = 0;
+
+  for (GList *l = instance->sn_items; l != NULL; l = l->next) {
+    SnItem *sn = (SnItem*) l->data;
+    GtkWidget *image = gtk_image_new_from_icon_name (sn->icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_grid_attach (GTK_GRID (grid), image, col, row, 1, 1);
+
+    col++;
+    if (col >= instance->config->max_columns) {
+      col = 0;
+      row++;
+    }
+  }
+
+  gtk_widget_show_all (grid);
+
+  GtkWidget *menu_item = gtk_menu_item_new ();
+  gtk_container_add (GTK_CONTAINER (menu_item), grid);
+  gtk_widget_show (menu_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (instance->menu), menu_item);
 
   g_signal_connect(instance->watcher, "g-properties-changed", G_CALLBACK(on_properties_changed), instance);
   g_signal_connect(instance->watcher, "g-signal", G_CALLBACK(on_item_registered), instance);

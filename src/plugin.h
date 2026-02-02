@@ -39,6 +39,7 @@ typedef struct {
 
   GtkWidget* menu;
   GDBusProxy* watcher;
+  GList* sn_items;
 
   GtkWidget* settings_dialog;
 } HiddenApps;
