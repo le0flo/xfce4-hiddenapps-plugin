@@ -53,6 +53,10 @@ static GVariant* sn_item_get_property (const gchar *bus_name, const gchar *obj_p
   return inner;
 }
 
+static void pixbuf_data_free (guchar *pixels, gpointer user_data) {
+  g_free (pixels);
+}
+
 static GdkPixbuf* sn_item_parse_icon_pixmap (GVariant *variant) {
   GVariantIter iter;
   gint32 width, height;
@@ -76,7 +80,7 @@ static GdkPixbuf* sn_item_parse_icon_pixmap (GVariant *variant) {
     }
 
     /* ARGB32 network byte order -> RGBA for GdkPixbuf */
-    guint8 *rgba = g_malloc (width * height * 4);
+    guchar *rgba = g_malloc (width * height * 4);
     for (gint i = 0; i < width * height; i++) {
       guint32 pixel = GUINT32_FROM_BE (((guint32*) data)[i]);
       rgba[i * 4 + 0] = (pixel >> 16) & 0xFF; /* R */
@@ -91,7 +95,7 @@ static GdkPixbuf* sn_item_parse_icon_pixmap (GVariant *variant) {
         g_object_unref (best);
       best = gdk_pixbuf_new_from_data (rgba, GDK_COLORSPACE_RGB, TRUE, 8,
                                        width, height, width * 4,
-                                       (GdkPixbufDestroyNotify) g_free, NULL);
+                                       pixbuf_data_free, NULL);
       best_size = width;
     } else {
       g_free (rgba);
