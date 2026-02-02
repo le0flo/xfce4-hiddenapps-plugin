@@ -43,14 +43,15 @@ static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   gtk_widget_show (instance->item_hvbox);
   gtk_container_add (GTK_CONTAINER (instance->item_ebox), instance->item_hvbox);
 
-  instance->item_button = gtk_button_new_from_icon_name("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON);
-  gtk_button_set_relief (GTK_BUTTON (instance->item_button), GTK_RELIEF_HALF);
+  instance->item_button = gtk_toggle_button_new ();
+  gtk_button_set_image (GTK_BUTTON (instance->item_button), gtk_image_new_from_icon_name ("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON));
+  gtk_button_set_relief (GTK_BUTTON (instance->item_button), GTK_RELIEF_NONE);
   gtk_widget_show (instance->item_button);
   gtk_box_pack_start (GTK_BOX (instance->item_hvbox), instance->item_button, FALSE, TRUE, 0);
 
   menu_build (plugin, instance);
 
-  g_signal_connect (instance->item_button, "button-press-event", G_CALLBACK (menu_show), instance->menu);
+  g_signal_connect (instance->item_button, "button-press-event", G_CALLBACK (menu_show), instance);
 
   return instance;
 }
