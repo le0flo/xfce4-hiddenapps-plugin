@@ -43,6 +43,8 @@ static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   gtk_container_add (GTK_CONTAINER (instance->item_ebox), instance->item_hvbox);
 
   instance->item_button = gtk_button_new_from_icon_name("adw-expander-arrow-symbolic", GTK_ICON_SIZE_BUTTON);
+  gtk_button_set_relief (GTK_BUTTON (instance->item_button), GTK_RELIEF_NONE);
+  gtk_widget_set_opacity (instance->item_button, 0.7);
   gtk_widget_show (instance->item_button);
   gtk_box_pack_start (GTK_BOX (instance->item_hvbox), instance->item_button, FALSE, TRUE, 0);
 
