@@ -33,6 +33,7 @@ static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   instance->config = config;
 
   settings_read (plugin, config);
+  menu_build (plugin, instance);
 
   orientation = xfce_panel_plugin_get_orientation (plugin);
 
@@ -48,8 +49,6 @@ static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   gtk_button_set_relief (GTK_BUTTON (instance->item_button), GTK_RELIEF_NONE);
   gtk_widget_show (instance->item_button);
   gtk_box_pack_start (GTK_BOX (instance->item_hvbox), instance->item_button, FALSE, TRUE, 0);
-
-  menu_build (plugin, instance);
 
   g_signal_connect (instance->item_button, "button-press-event", G_CALLBACK (menu_show), instance);
 
