@@ -1,18 +1,24 @@
+sn_backend_resources = gnome.compile_resources(
+  'sn-backend-resources',
+  'dbus/sn-backend.gresource.xml',
+  source_dir: 'dbus',
+  c_name: 'sn_backend',
+)
+
 plugin_sources = [
-  'sn-host.c',
-  'sn-host.h',
-  'sn-watcher.c',
-  'sn-watcher.h',
-  'sn-item.c',
+  'sn-backend.h',
+  'sn-backend.c',
   'sn-item.h',
-  'config.c',
+  'sn-item.c',
+  sn_backend_resources,
   'config.h',
-  'plugin.c',
+  'config.c',
   'plugin.h',
-  'dialogs.c',
+  'plugin.c',
   'dialogs.h',
-  'menu.c',
+  'dialogs.c',
   'menu.h',
+  'menu.c',
   xfce_revision_h,
 ]
 

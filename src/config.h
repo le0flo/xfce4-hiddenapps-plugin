@@ -10,7 +10,9 @@ typedef struct {
   gint max_columns;
 } Config;
 
-void config_save (XfcePanelPlugin* plugin, Config* instance);
-void config_read (XfcePanelPlugin* plugin, Config* instance);
+Config* config_new (void);
+
+void config_save (Config* config, XfcePanelPlugin* plugin);
+void config_read (Config* config, XfcePanelPlugin* plugin);
 
 #endif

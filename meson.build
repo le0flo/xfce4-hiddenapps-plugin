@@ -17,7 +17,7 @@ copyright_year = '2025'
 
 cc = meson.get_compiler('c')
 #pkgconfig = import('pkgconfig')
-#gnome = import('gnome')
+gnome = import('gnome')
 i18n = import('i18n')
 
 dependency_versions = {

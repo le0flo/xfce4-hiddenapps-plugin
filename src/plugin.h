@@ -2,11 +2,11 @@
 #define __PLUGIN_H__
 
 #include "config.h"
-
-G_BEGIN_DECLS
+#include "sn-backend.h"
 
 typedef struct {
   XfcePanelPlugin* plugin;
+  SnBackend* backend;
   Config* config;
 
   GtkWidget* item_ebox;
@@ -16,7 +16,5 @@ typedef struct {
   GtkWidget* menu;
   GtkWidget* settings_dialog;
 } HiddenApps;
-
-G_END_DECLS
 
 #endif
