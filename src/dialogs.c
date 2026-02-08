@@ -4,6 +4,8 @@
 #include "xfce-revision.h"
 #endif
 
+static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance);
+
 static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance) {
   gboolean result;
 
@@ -17,14 +19,10 @@ static void configure_response (GtkWidget* dialog, gint response, HiddenApps* in
   else {
     g_object_set_data (G_OBJECT (instance->plugin), "dialog", NULL);
 
-    settings_save (instance->plugin, instance->config);
+    config_save (instance->plugin, instance->config);
 
     gtk_widget_destroy (dialog);
   }
-}
-
-static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance) {
-  instance->config->max_columns = gtk_spin_button_get_value_as_int (spin);
 }
 
 void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
@@ -85,4 +83,8 @@ void dialog_about (XfcePanelPlugin *plugin) {
     "authors", auth,
     NULL
   );
+}
+
+static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance) {
+  instance->config->max_columns = gtk_spin_button_get_value_as_int (spin);
 }

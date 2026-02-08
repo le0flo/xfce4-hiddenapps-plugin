@@ -3,6 +3,9 @@
 #include "menu.h"
 #include "dialogs.h"
 
+static void hiddenapps_orientation_changed (XfcePanelPlugin* plugin, GtkOrientation orientation, HiddenApps* instance);
+static gboolean hiddenapps_size_changed (XfcePanelPlugin* plugin, gint size, HiddenApps* instance);
+
 static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   HiddenApps* instance;
   Config* config;
@@ -13,7 +16,7 @@ static HiddenApps* hiddenapps_new (XfcePanelPlugin* plugin) {
   config = g_slice_new0(Config);
   instance->config = config;
 
-  settings_read (plugin, config);
+  config_read (plugin, config);
   menu_build (plugin, instance);
 
   orientation = xfce_panel_plugin_get_orientation (plugin);
@@ -48,6 +51,30 @@ static void hiddenapps_free (XfcePanelPlugin* plugin, HiddenApps* instance) {
   g_slice_free (HiddenApps, instance);
 }
 
+static void hiddenapps_construct (XfcePanelPlugin *plugin) {
+  HiddenApps* instance;
+
+  xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+
+  instance = hiddenapps_new (plugin);
+
+  gtk_container_add (GTK_CONTAINER (plugin), instance->item_ebox);
+  xfce_panel_plugin_add_action_widget (plugin, instance->item_ebox);
+
+  g_signal_connect (G_OBJECT (plugin), "free-data", G_CALLBACK (hiddenapps_free), instance);
+  g_signal_connect (G_OBJECT (plugin), "save", G_CALLBACK (config_save), instance);
+  g_signal_connect (G_OBJECT (plugin), "orientation-changed", G_CALLBACK (hiddenapps_orientation_changed), instance);
+  g_signal_connect (G_OBJECT (plugin), "size-changed", G_CALLBACK (hiddenapps_size_changed), instance);
+
+  xfce_panel_plugin_menu_show_configure (plugin);
+  g_signal_connect (G_OBJECT (plugin), "configure-plugin", G_CALLBACK (dialog_configure), instance);
+
+  xfce_panel_plugin_menu_show_about (plugin);
+  g_signal_connect (G_OBJECT (plugin), "about", G_CALLBACK (dialog_about), NULL);
+}
+
+XFCE_PANEL_PLUGIN_REGISTER (hiddenapps_construct);
+
 static void hiddenapps_orientation_changed (XfcePanelPlugin* plugin, GtkOrientation orientation, HiddenApps* instance) {
   gtk_orientable_set_orientation (GTK_ORIENTABLE (instance->item_hvbox), orientation);
 }
@@ -66,27 +93,3 @@ static gboolean hiddenapps_size_changed (XfcePanelPlugin* plugin, gint size, Hid
 
   return TRUE;
 }
-
-static void hiddenapps_construct (XfcePanelPlugin *plugin) {
-  HiddenApps* instance;
-
-  xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
-
-  instance = hiddenapps_new (plugin);
-
-  gtk_container_add (GTK_CONTAINER (plugin), instance->item_ebox);
-  xfce_panel_plugin_add_action_widget (plugin, instance->item_ebox);
-
-  g_signal_connect (G_OBJECT (plugin), "free-data", G_CALLBACK (hiddenapps_free), instance);
-  g_signal_connect (G_OBJECT (plugin), "save", G_CALLBACK (settings_save), instance);
-  g_signal_connect (G_OBJECT (plugin), "orientation-changed", G_CALLBACK (hiddenapps_orientation_changed), instance);
-  g_signal_connect (G_OBJECT (plugin), "size-changed", G_CALLBACK (hiddenapps_size_changed), instance);
-
-  xfce_panel_plugin_menu_show_configure (plugin);
-  g_signal_connect (G_OBJECT (plugin), "configure-plugin", G_CALLBACK (dialog_configure), instance);
-
-  xfce_panel_plugin_menu_show_about (plugin);
-  g_signal_connect (G_OBJECT (plugin), "about", G_CALLBACK (dialog_about), NULL);
-}
-
-XFCE_PANEL_PLUGIN_REGISTER (hiddenapps_construct);

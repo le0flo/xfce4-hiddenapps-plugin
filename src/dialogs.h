@@ -8,11 +8,7 @@
 #define VERSION_FULL "0.0.1"
 #define PLUGIN_WEBSITE "https://leoflo.me"
 
-G_BEGIN_DECLS
-
 void dialog_configure (XfcePanelPlugin* plugin, HiddenApps* instance);
 void dialog_about (XfcePanelPlugin* plugin);
-
-G_END_DECLS
 
 #endif
