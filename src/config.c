@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-void settings_save (XfcePanelPlugin* plugin, Config* instance) {
+void config_save (XfcePanelPlugin* plugin, Config* instance) {
   gchar* file = xfce_panel_plugin_save_location (plugin, TRUE);
 
   if (G_UNLIKELY (file == NULL)) {
@@ -21,7 +21,7 @@ void settings_save (XfcePanelPlugin* plugin, Config* instance) {
   }
 }
 
-void settings_read (XfcePanelPlugin* plugin, Config* instance) {
+void config_read (XfcePanelPlugin* plugin, Config* instance) {
   gchar* file = xfce_panel_plugin_save_location (plugin, TRUE);
 
   if (G_LIKELY (file != NULL)) {
