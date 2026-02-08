@@ -14,6 +14,8 @@ typedef struct {
   GtkWidget* item_button;
 
   GtkWidget* menu;
+  gboolean menu_active;
+
   GtkWidget* settings_dialog;
 } HiddenApps;
 

@@ -5,11 +5,12 @@
 
 static void menu_reposition (HiddenApps* instance);
 
+static GtkWidget* create_icon_widget (SnItem* item);
+
 static void on_popup_focus_out (GtkWidget* widget, GdkEventFocus* event, gpointer user_data);
 static void on_icon_clicked (GtkButton* button, gpointer user_data);
 static gboolean on_icon_button_press (GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-
-static GtkWidget* create_icon_widget (SnItem* item);
+static void on_context_menu_hidden (GtkWidget* widget, gpointer user_data);
 
 gboolean menu_show (GtkWidget* widget, GdkEventButton* event, HiddenApps* instance) {
   if (event->button != 1) {
@@ -108,8 +109,9 @@ void menu_refresh (HiddenApps* instance) {
       gtk_widget_set_tooltip_text (button, tip);
     }
 
+    g_object_set_data (G_OBJECT (button), "sn-item", item);
     g_signal_connect (button, "clicked", G_CALLBACK (on_icon_clicked), item);
-    g_signal_connect (button, "button-press-event", G_CALLBACK (on_icon_button_press), item);
+    g_signal_connect (button, "button-press-event", G_CALLBACK (on_icon_button_press), instance);
 
     gint col = index % DEFAULT_CONFIG_MAX_COLUMNS;
     gint row = index / DEFAULT_CONFIG_MAX_COLUMNS;
@@ -182,30 +184,6 @@ static void menu_reposition (HiddenApps* instance) {
   gtk_window_move (GTK_WINDOW (instance->menu), x, y);
 }
 
-static void on_popup_focus_out (GtkWidget* widget, GdkEventFocus* event, gpointer user_data) {
-  HiddenApps* instance = user_data;
-
-  gtk_widget_hide (instance->menu);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (instance->item_button), FALSE);
-}
-
-static void on_icon_clicked (GtkButton* button, gpointer user_data) {
-  SnItem* item = user_data;
-
-  sn_item_activate (item, 0, 0);
-}
-
-static gboolean on_icon_button_press (GtkWidget* widget, GdkEventButton* event, gpointer user_data) {
-  SnItem* item = user_data;
-
-  if (event->button == 3) {
-    sn_item_context_menu (item, (gint) event->x_root, (gint) event->y_root);
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
 static GtkWidget* create_icon_widget (SnItem* item) {
   GtkWidget* image = NULL;
 
@@ -224,4 +202,51 @@ static GtkWidget* create_icon_widget (SnItem* item) {
   }
 
   return image;
+}
+
+static void on_popup_focus_out (GtkWidget* widget, GdkEventFocus* event, gpointer user_data) {
+  HiddenApps* instance = user_data;
+
+  if (instance->menu_active) {
+    return;
+  }
+
+  gtk_widget_hide (instance->menu);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (instance->item_button), FALSE);
+}
+
+static void on_icon_clicked (GtkButton* button, gpointer user_data) {
+  SnItem* item = user_data;
+
+  sn_item_activate (item, 0, 0);
+}
+
+static gboolean on_icon_button_press (GtkWidget* widget, GdkEventButton* event, gpointer user_data) {
+  HiddenApps* instance = user_data;
+  SnItem* item = g_object_get_data (G_OBJECT (widget), "sn-item");
+
+  if (event->button == 3) {
+    GtkMenu* menu = sn_item_get_gtk_menu (item);
+
+    if (menu != NULL) {
+      instance->menu_active = TRUE;
+      g_signal_connect (menu, "hide", G_CALLBACK (on_context_menu_hidden), instance);
+      gtk_menu_popup_at_pointer (menu, (GdkEvent*) event);
+    } else {
+      sn_item_context_menu (item, (gint) event->x_root, (gint) event->y_root);
+    }
+
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+static void on_context_menu_hidden (GtkWidget* widget, gpointer user_data) {
+  HiddenApps* instance = user_data;
+
+  instance->menu_active = FALSE;
+  g_signal_handlers_disconnect_by_func (widget, on_context_menu_hidden, instance);
+
+  gtk_window_present (GTK_WINDOW (instance->menu));
 }

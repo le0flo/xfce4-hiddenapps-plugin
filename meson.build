@@ -24,6 +24,7 @@ dependency_versions = {
   'glib': '>= 2.66.0',
   'gtk': '>= 3.24.0',
   'xfce4': '>= 4.16.0',
+  'dbusmenu-gtk3': '>= 16.04.0',
 }
 
 glib = dependency('glib-2.0', version: dependency_versions['glib'])
@@ -31,6 +32,7 @@ gtk = dependency('gtk+-3.0', version: dependency_versions['gtk'])
 libxfce4panel = dependency('libxfce4panel-2.0', version: dependency_versions['xfce4'])
 libxfce4ui = dependency('libxfce4ui-2', version: dependency_versions['xfce4'])
 libxfce4util = dependency('libxfce4util-1.0', version: dependency_versions['xfce4'])
+libdbusmenu_gtk3 = dependency('dbusmenu-gtk3-0.4', version: dependency_versions['dbusmenu-gtk3'])
 
 feature_cflags = []
 if cc.check_header('string.h')
