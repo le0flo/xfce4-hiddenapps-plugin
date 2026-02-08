@@ -81,6 +81,7 @@ void sn_item_free (SnItem* item) {
   g_free (item->tooltip_body);
 
   g_free (item->menu_path);
+  g_clear_object (&item->dbus_menu);
 
   g_slice_free (SnItem, item);
 }
@@ -102,6 +103,14 @@ void sn_item_secondary_activate (SnItem* item, gint x, gint y) {
 
 void sn_item_context_menu (SnItem* item, gint x, gint y) {
   call_method_xy (item, "ContextMenu", x, y);
+}
+
+GtkMenu* sn_item_get_gtk_menu (SnItem* item) {
+  if (item->dbus_menu == NULL) {
+    return NULL;
+  }
+
+  return GTK_MENU (item->dbus_menu);
 }
 
 void sn_item_scroll (SnItem* item, gint delta, const gchar* orientation) {
@@ -311,6 +320,7 @@ static void refresh_properties (SnItem* item) {
   g_free (item->attention_movie_name);
 
   g_free (item->menu_path);
+  g_clear_object (&item->dbus_menu);
 
   item->category = get_string_prop (p, "Category");
   item->id = get_string_prop (p, "Id");
@@ -327,6 +337,10 @@ static void refresh_properties (SnItem* item) {
 
   item->item_is_menu = get_boolean_prop (p, "ItemIsMenu");
   item->menu_path = get_object_path_prop (p, "Menu");
+
+  if (item->menu_path != NULL && item->menu_path[0] != '\0') {
+    item->dbus_menu = DBUSMENU_GTKMENU (dbusmenu_gtkmenu_new (item->bus_name, item->menu_path));
+  }
 
   cache_icon_pixmap (item);
   cache_tooltip (item);

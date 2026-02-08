@@ -40,6 +40,7 @@ shared_module(
     libxfce4panel,
     libxfce4ui,
     libxfce4util,
+    libdbusmenu_gtk3,
   ],
   install: true,
   install_dir: get_option('prefix') / get_option('libdir') / plugin_install_subdir,

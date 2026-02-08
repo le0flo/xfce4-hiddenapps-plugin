@@ -1,7 +1,8 @@
 #ifndef __SN_ITEM_H__
 #define __SN_ITEM_H__
 
-#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+#include <libdbusmenu-gtk/menu.h>
 
 #define SN_ITEM_INTERFACE_FDO "org.freedesktop.StatusNotifierItem"
 #define SN_ITEM_INTERFACE_KDE "org.kde.StatusNotifierItem"
@@ -36,6 +37,7 @@ struct _SnItem {
 
   gboolean item_is_menu;
   gchar* menu_path;
+  DbusmenuGtkMenu* dbus_menu;
 
   SnItemChangedCallback changed_callback;
   gpointer changed_callback_data;
@@ -49,6 +51,7 @@ void sn_item_set_changed_callback (SnItem* item, SnItemChangedCallback cb, gpoin
 void sn_item_activate (SnItem* item, gint x, gint y);
 void sn_item_secondary_activate (SnItem* item, gint x, gint y);
 void sn_item_context_menu (SnItem* item, gint x, gint y);
+GtkMenu* sn_item_get_gtk_menu (SnItem* item);
 void sn_item_scroll (SnItem* item, gint delta, const gchar* orientation);
 
 #endif
