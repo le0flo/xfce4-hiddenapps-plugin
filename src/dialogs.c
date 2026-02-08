@@ -4,26 +4,9 @@
 #include "xfce-revision.h"
 #endif
 
-static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance) {
-  instance->config->max_columns = gtk_spin_button_get_value_as_int (spin);
-}
+static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance);
 
-static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance) {
-  if (response == GTK_RESPONSE_HELP) {
-    gboolean result = g_spawn_command_line_async ("exo-open --launch WebBrowser " PLUGIN_WEBSITE, NULL);
-
-    if (G_UNLIKELY (result == FALSE)) {
-      g_warning (_ ("Unable to open the following url: %s"), PLUGIN_WEBSITE);
-    }
-  }
-  else {
-    g_object_set_data (G_OBJECT (instance->plugin), "dialog", NULL);
-
-    config_save (instance->config, instance->plugin);
-
-    gtk_widget_destroy (dialog);
-  }
-}
+static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance);
 
 void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
   if (instance->settings_dialog != NULL) {
@@ -32,14 +15,17 @@ void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
   }
 
   instance->settings_dialog = xfce_titled_dialog_new_with_mixed_buttons (
-    _ ("Hidden apps"),
-    GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
-    GTK_DIALOG_DESTROY_WITH_PARENT, "help-browser-symbolic", _ ("_Help"),
-    GTK_RESPONSE_HELP, "window-close-symbolic", _ ("_Close"), GTK_RESPONSE_OK,
+    "Hidden apps",
+    GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))), GTK_DIALOG_DESTROY_WITH_PARENT,
+    "help-browser-symbolic", "Help", GTK_RESPONSE_HELP,
+    "window-close-symbolic", "Close", GTK_RESPONSE_OK,
     NULL
   );
 
   g_object_add_weak_pointer (G_OBJECT (instance->settings_dialog), (gpointer*) &instance->settings_dialog);
+  g_object_set_data (G_OBJECT (plugin), "dialog", instance->settings_dialog);
+
+  g_signal_connect (G_OBJECT (instance->settings_dialog), "response", G_CALLBACK (configure_response), instance);
 
   gtk_window_set_position (GTK_WINDOW (instance->settings_dialog), GTK_WIN_POS_CENTER);
   gtk_window_set_icon_name (GTK_WINDOW (instance->settings_dialog), "xfce4-settings");
@@ -47,21 +33,18 @@ void dialog_configure (XfcePanelPlugin *plugin, HiddenApps *instance) {
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (box), 12);
 
-  GtkWidget *label = gtk_label_new (_("Max columns:"));
+  GtkWidget *label = gtk_label_new ("Max columns:");
   gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
 
   GtkWidget *spin = gtk_spin_button_new_with_range (1, 20, 1);
+  gtk_box_pack_start (GTK_BOX (box), spin, FALSE, FALSE, 0);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), instance->config->max_columns);
   g_signal_connect (spin, "value-changed", G_CALLBACK (on_max_columns_changed), instance);
-  gtk_box_pack_start (GTK_BOX (box), spin, FALSE, FALSE, 0);
 
   GtkWidget *content = gtk_dialog_get_content_area (GTK_DIALOG (instance->settings_dialog));
   gtk_box_pack_start (GTK_BOX (content), box, FALSE, FALSE, 0);
+
   gtk_widget_show_all (box);
-
-  g_object_set_data (G_OBJECT (plugin), "dialog", instance->settings_dialog);
-  g_signal_connect (G_OBJECT (instance->settings_dialog), "response", G_CALLBACK (configure_response), instance);
-
   gtk_widget_show (instance->settings_dialog);
 }
 
@@ -79,4 +62,25 @@ void dialog_about (XfcePanelPlugin *plugin) {
     "authors", auth,
     NULL
   );
+}
+
+static void on_max_columns_changed (GtkSpinButton *spin, HiddenApps *instance) {
+  instance->config->max_columns = gtk_spin_button_get_value_as_int (spin);
+}
+
+static void configure_response (GtkWidget* dialog, gint response, HiddenApps* instance) {
+  if (response == GTK_RESPONSE_HELP) {
+    gboolean result = g_spawn_command_line_async ("exo-open --launch WebBrowser " PLUGIN_WEBSITE, NULL);
+
+    if (G_UNLIKELY (result == FALSE)) {
+      g_warning ("Unable to open the following url: %s", PLUGIN_WEBSITE);
+    }
+  }
+  else {
+    g_object_set_data (G_OBJECT (instance->plugin), "dialog", NULL);
+
+    config_save (instance->config, instance->plugin);
+
+    gtk_widget_destroy (dialog);
+  }
 }

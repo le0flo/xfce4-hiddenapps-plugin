@@ -7,6 +7,12 @@
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    libs = with pkgs; [
+      glib gtk3
+      xfce4-panel
+      libxfce4ui libxfce4util
+      libdbusmenu-gtk3
+    ];
   in {
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
@@ -14,11 +20,7 @@
         ninja meson
       ];
 
-      buildInputs = with pkgs; [
-        glib gtk3
-        xfce4-panel
-        libxfce4ui libxfce4util
-      ];
+      buildInputs = libs;
 
       shellHook = ''
         cat > .clangd <<EOF
@@ -58,11 +60,7 @@
           ninja meson
         ];
 
-        buildInputs = with pkgs; [
-          glib gtk3
-          xfce4-panel
-          libxfce4ui libxfce4util
-        ];
+        buildInputs = libs;
 
         installPhase = ''
           mkdir -p $out/{lib,share}/xfce4/panel/plugins
@@ -89,11 +87,7 @@
           ninja meson
         ];
 
-        buildInputs = with pkgs; [
-          glib gtk3
-          xfce4-panel
-          libxfce4ui libxfce4util
-        ];
+        buildInputs = libs;
 
         installPhase = ''
           mkdir -p $out/{lib,share}/xfce4/panel/plugins

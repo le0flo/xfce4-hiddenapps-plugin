@@ -1,15 +1,18 @@
 #ifndef __SN_ITEM_H__
 #define __SN_ITEM_H__
 
-#include <gio/gio.h>
+#include <gdk/gdk.h>
 
-#define SN_ITEM_INTERFACE "org.freedesktop.StatusNotifierItem"
+#define SN_ITEM_INTERFACE_FDO "org.freedesktop.StatusNotifierItem"
+#define SN_ITEM_INTERFACE_KDE "org.kde.StatusNotifierItem"
 
-#define SN_ITEM_INTROSPECTION_PATH "/org/freedesktop/StatusNotifierItem/org.freedesktop.StatusNotifierItem.xml"
+typedef struct _SnItem SnItem;
 
-typedef struct {
-  gchar* bus_name;    /* e.g. ":1.42" or "org.app.Foo" */
-  gchar* obj_path;    /* e.g. "/StatusNotifierItem"     */
+typedef void (*SnItemChangedCallback) (SnItem* item, gpointer user_data);
+
+struct _SnItem {
+  gchar* bus_name;
+  gchar* obj_path;
   GDBusProxy* proxy;
   GDBusConnection* connection;
 
@@ -20,7 +23,10 @@ typedef struct {
   guint32 window_id;
 
   gchar* icon_name;
+  GdkPixbuf* icon_pixmap;
+
   gchar* overlay_icon_name;
+
   gchar* attention_icon_name;
   gchar* attention_movie_name;
 
@@ -30,10 +36,15 @@ typedef struct {
 
   gboolean item_is_menu;
   gchar* menu_path;
-} SnItem;
 
-SnItem* sn_item_get (GDBusConnection* connection, const gchar* bus_name, const gchar* obj_path);
+  SnItemChangedCallback changed_callback;
+  gpointer changed_callback_data;
+};
+
+SnItem* sn_item_new (GDBusConnection* connection, const gchar* bus_name, const gchar* obj_path, gboolean use_kde);
 void sn_item_free (SnItem* item);
+
+void sn_item_set_changed_callback (SnItem* item, SnItemChangedCallback cb, gpointer user_data);
 
 void sn_item_activate (SnItem* item, gint x, gint y);
 void sn_item_secondary_activate (SnItem* item, gint x, gint y);
