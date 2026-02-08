@@ -1,8 +1,14 @@
 #include <libxfce4util/libxfce4util.h>
 
 #include "config.h"
+#include "glib.h"
 
-void config_save (XfcePanelPlugin* plugin, Config* instance) {
+Config* config_new (void) {
+  Config* config = g_slice_new(Config);
+  return config;
+}
+
+void config_save (Config* config, XfcePanelPlugin* plugin) {
   gchar* file = xfce_panel_plugin_save_location (plugin, TRUE);
 
   if (G_UNLIKELY (file == NULL)) {
@@ -15,13 +21,13 @@ void config_save (XfcePanelPlugin* plugin, Config* instance) {
   g_free (file);
 
   if (G_LIKELY (rc != NULL)) {
-    xfce_rc_write_int_entry (rc, "max_columns", instance->max_columns);
+    xfce_rc_write_int_entry (rc, "max_columns", config->max_columns);
 
     xfce_rc_close (rc);
   }
 }
 
-void config_read (XfcePanelPlugin* plugin, Config* instance) {
+void config_read (Config* config, XfcePanelPlugin* plugin) {
   gchar* file = xfce_panel_plugin_save_location (plugin, TRUE);
 
   if (G_LIKELY (file != NULL)) {
@@ -30,7 +36,7 @@ void config_read (XfcePanelPlugin* plugin, Config* instance) {
     g_free (file);
 
     if (G_LIKELY (rc != NULL)) {
-      instance->max_columns = xfce_rc_read_int_entry (rc, "max_columns", DEFAULT_CONFIG_MAX_COLUMNS);
+      config->max_columns = xfce_rc_read_int_entry (rc, "max_columns", DEFAULT_CONFIG_MAX_COLUMNS);
 
       xfce_rc_close (rc);
 
@@ -39,5 +45,5 @@ void config_read (XfcePanelPlugin* plugin, Config* instance) {
   }
 
   DBG ("Applying default settings");
-  instance->max_columns = DEFAULT_CONFIG_MAX_COLUMNS;
+  config->max_columns = DEFAULT_CONFIG_MAX_COLUMNS;
 }

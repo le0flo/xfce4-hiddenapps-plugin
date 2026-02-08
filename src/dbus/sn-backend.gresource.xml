@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/freedesktop/StatusNotifierWatcher">
+    <file>org.freedesktop.StatusNotifierWatcher.xml</file>
+  </gresource>
+  <gresource prefix="/org/freedesktop/StatusNotifierItem">
+    <file>org.freedesktop.StatusNotifierItem.xml</file>
+  </gresource>
+</gresources>

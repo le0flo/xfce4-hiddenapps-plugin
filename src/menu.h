@@ -3,7 +3,7 @@
 
 #include "plugin.h"
 
-void menu_build (XfcePanelPlugin* plugin, HiddenApps* instance);
+void menu_build (HiddenApps* instance);
 void menu_refresh (HiddenApps* instance);
 
 gboolean menu_show (GtkWidget *widget, GdkEventButton* event, HiddenApps* instance);
