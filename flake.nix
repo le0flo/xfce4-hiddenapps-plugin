@@ -51,8 +51,7 @@
 
         src = fetchGit {
           url = "https://codeberg.org/leoflo/xfce4-hiddenapps-plugin";
-          ref = "master";
-          rev = "62aba2630a0c86d24ad9770748937c5b5d126bb7";
+          ref = "refs/tags/v0.0.1";
         };
 
         nativeBuildInputs = with pkgs; [
