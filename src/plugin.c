@@ -1,12 +1,11 @@
 #include "plugin.h"
 
-#include "sn-backend.h"
-#include "config.h"
 #include "menu.h"
 #include "dialogs.h"
 
 static void on_orientation_changed (XfcePanelPlugin* plugin, GtkOrientation orientation, HiddenApps* instance);
 static void on_size_changed (XfcePanelPlugin* plugin, gint size, HiddenApps* instance);
+static void on_backend_changed (SnBackend* backend, gpointer user_data);
 
 static HiddenApps* hiddenapps_new (void) {
   HiddenApps* instance = g_slice_new0 (HiddenApps);
@@ -21,6 +20,8 @@ static void hiddenapps_init (HiddenApps* instance, XfcePanelPlugin* plugin) {
   GtkOrientation orientation = xfce_panel_plugin_get_orientation (plugin);
 
   sn_backend_init (instance->backend);
+  sn_backend_set_changed_callback (instance->backend, on_backend_changed, instance);
+
   config_read (instance->config, instance->plugin);
   menu_build (instance);
 
@@ -92,4 +93,9 @@ static void on_size_changed (XfcePanelPlugin* plugin, gint size, HiddenApps* ins
   else {
     gtk_widget_set_size_request (GTK_WIDGET (plugin), size, -1);
   }
+}
+
+static void on_backend_changed (SnBackend* backend, gpointer user_data) {
+  HiddenApps* instance = user_data;
+  menu_refresh (instance);
 }

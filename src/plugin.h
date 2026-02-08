@@ -1,8 +1,8 @@
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
 
-#include "config.h"
 #include "sn-backend.h"
+#include "config.h"
 
 typedef struct {
   XfcePanelPlugin* plugin;

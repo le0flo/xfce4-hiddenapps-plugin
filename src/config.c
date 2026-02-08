@@ -1,7 +1,4 @@
-#include <libxfce4util/libxfce4util.h>
-
 #include "config.h"
-#include "glib.h"
 
 Config* config_new (void) {
   Config* config = g_slice_new(Config);
