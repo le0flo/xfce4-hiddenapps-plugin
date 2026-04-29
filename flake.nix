@@ -7,6 +7,14 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+
+      programs = with pkgs; [
+        gettext
+        pkg-config
+        ninja
+        meson
+      ];
+
       libs = with pkgs; [
         glib
         gtk3
@@ -18,13 +26,7 @@
     in
     {
       devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          gettext
-          pkg-config
-          ninja
-          meson
-        ];
-
+        packages = programs;
         buildInputs = libs;
 
         shellHook = ''
@@ -46,6 +48,8 @@
             }
           }
           EOF
+
+          export PS1="("devshell") $PS1";
         '';
       };
 
@@ -55,20 +59,18 @@
 
         src = pkgs.lib.cleanSource self;
 
-        nativeBuildInputs = with pkgs; [
-          gettext
-          pkg-config
-          ninja
-          meson
-        ];
-
+        nativeBuildInputs = programs;
         buildInputs = libs;
 
         installPhase = ''
+          runHook preInstall
+
           mkdir -p $out/{lib,share}/xfce4/panel/plugins
 
-          cp src/libhiddenapps.so $out/lib/xfce4/panel/plugins
-          cp src/hiddenapps.desktop $out/share/xfce4/panel/plugins
+          install -D src/libhiddenapps.so $out/lib/xfce4/panel/plugins/libhiddenapps.so
+          install -D src/hiddenapps.desktop $out/share/xfce4/panel/plugins/hiddenapps.desktop
+
+          runHook postInstall
         '';
 
         meta = {
